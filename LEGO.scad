@@ -1,10 +1,19 @@
 /**
- * Derived from http://www.thingiverse.com/thing:5699
+*  Derived from https://github.com/cfinke/LEGO.scad
  *
  * LEGO®, the LEGO® logo, the Brick, DUPLO®, and MINDSTORMS® are trademarks of the LEGO® Group. ©2012 The LEGO® Group.
  */
 
 /* [General] */
+
+/** TODO: 
+ *   There are some features missing in these bricks that do not occur in the original LEGO
+ *     bricks.  
+ *   (1) The technical drawing of the 2x4 brick includes supporting trusses  between the side walls and the 
+ *   (2) The studs are not hollowed-out on the underside, as they are in the original LEGO bricks.
+ *   (3) Some of the dimensions in the cfinke library this was derived from were wrong.  And the 
+ *    studs were not rounded.  Ongoing attempt to find appropriate amount of rounding.
+ */
 
 // NOTE: $fs does not seem to work if $fa is set too big. 
 $fa=1;
@@ -25,7 +34,7 @@ block_type = "brick"; // [brick:Brick, tile:Tile, wing:Wing, slope:Slope, curve:
 block_brand = "lego"; // [lego:LEGO, duplo:DUPLO]
 
 // What stud type do you want? Hollow studs allow rods to be pushed into the stud.
-stud_type = "solid"; // [solid:Solid, hollow:Hollow]
+stud_type = "Solid"; // [solid:Solid, hollow:Hollow]
 
 // Should the block include round horizontal holes like the Technics LEGO bricks have?
 technic_holes = "no"; // [no:No, yes:Yes]
@@ -160,10 +169,10 @@ module block(
     // LP comment means verified w/LEGO specs
     post_wall_thickness = (brand == "lego" ? 0.85 : 1); // LP
     wall_thickness=(brand == "lego" ? 1.2 : 1.5); //LP
-    stud_diameter=(brand == "lego" ? 4.85 : 9.35); 
-    hollow_stud_inner_diameter = (brand == "lego" ? 3.1 : 6.7);
-    stud_height=(brand == "lego" ? 1.8 : 4.4);
-    stud_spacing=(brand == "lego" ? 8 : 8 * 2);
+    stud_diameter=(brand == "lego" ? 4.8 : 9.35);  //LP
+    hollow_stud_inner_diameter = (brand == "lego" ? 2.6 : 6.7); // LP not used?
+    stud_height=(brand == "lego" ? 1.8 : 4.4); //LP
+    stud_spacing=(brand == "lego" ? 8 : 8 * 2); //LP
     block_height=(brand == "lego" ? (type == "baseplate" ? 1.3 : 9.6) : 9.6 * 2);
     pin_diameter=(brand == "lego" ? 3 : 3 * 2);
     post_diameter=(brand == "lego" ? 6.5 : 13.2);
@@ -687,19 +696,30 @@ module block(
         }
     }
 
-    // OLD STUD CODE
-    /* module stud() {
-        difference() {
-            cylinder(r=(stud_diameter*stud_rescale)/2,h=stud_height,$fs=cylinder_precision);
-
-            if (stud_type == "hollow") {
-                // 0.5 is for cleaner preview; doesn't affect functionality.
-                cylinder(r=(hollow_stud_inner_diameter*stud_rescale)/2,h=stud_height+0.5,$fs=cylinder_precision);
-            }
-        }
-    }*/
+/** OLD stud code. Attmpting to put hole in underside.
     module stud() {
-    BevelRadius = ((stud_diameter*stud_rescale)-(hollow_stud_inner_diameter*stud_rescale))/3;
+    BevelRadius = ((stud_diameter*stud_rescale)-(hollow_stud_inner_diameter*stud_rescale))/6;
+    difference() {
+        union() {
+            translate([0,0,stud_height-BevelRadius]){
+                union() {
+                    rotate_extrude(convexity = 10,$fs=cylinder_precision)
+                    translate([(stud_diameter*stud_rescale)/2-BevelRadius, 0, 0])
+                    circle(r = BevelRadius,$fs=cylinder_precision); 
+                    cylinder(r=(stud_diameter*stud_rescale)/2-BevelRadius,h=2*BevelRadius,$fs=cylinder_precision,center=true);
+                }
+            }       
+            cylinder(r=(stud_diameter*stud_rescale)/2,h=stud_height-BevelRadius,$fs=cylinder_precision);
+        }
+        if (stud_type == "hollow") {
+            // 0.5 is for cleaner preview; doesn't affect functionality.
+            cylinder(r=(hollow_stud_inner_diameter*stud_rescale)/2,h=stud_height+0.5,$fs=cylinder_precision);
+        }
+    }
+}
+    **/
+    module stud() {
+    BevelRadius = ((stud_diameter*stud_rescale)-(hollow_stud_inner_diameter*stud_rescale))/6;
     difference() {
         union() {
             translate([0,0,stud_height-BevelRadius]){
