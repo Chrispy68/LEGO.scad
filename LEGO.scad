@@ -6,6 +6,9 @@
 
 /* [General] */
 
+// NOTE: $fs does not seem to work if $fa is set too big.
+$fa=1;
+
 // Width of the block, in studs
 block_width = 2;
 
@@ -683,7 +686,8 @@ module block(
         }
     }
 
-    module stud() {
+    // OLD STUD CODE
+    /* module stud() {
         difference() {
             cylinder(r=(stud_diameter*stud_rescale)/2,h=stud_height,$fs=cylinder_precision);
 
@@ -692,7 +696,27 @@ module block(
                 cylinder(r=(hollow_stud_inner_diameter*stud_rescale)/2,h=stud_height+0.5,$fs=cylinder_precision);
             }
         }
+    }*/
+    module stud() {
+    BevelRadius = ((stud_diameter*stud_rescale)-(hollow_stud_inner_diameter*stud_rescale))/3;
+    difference() {
+        union() {
+            translate([0,0,stud_height-BevelRadius]){
+                union() {
+                    rotate_extrude(convexity = 10,$fs=cylinder_precision)
+                    translate([(stud_diameter*stud_rescale)/2-BevelRadius, 0, 0])
+                    circle(r = BevelRadius,$fs=cylinder_precision); 
+                    cylinder(r=(stud_diameter*stud_rescale)/2-BevelRadius,h=2*BevelRadius,$fs=cylinder_precision,center=true);
+                }
+            }       
+            cylinder(r=(stud_diameter*stud_rescale)/2,h=stud_height-BevelRadius,$fs=cylinder_precision);
+        }
+        if (stud_type == "hollow") {
+            // 0.5 is for cleaner preview; doesn't affect functionality.
+            cylinder(r=(hollow_stud_inner_diameter*stud_rescale)/2,h=stud_height+0.5,$fs=cylinder_precision);
+        }
     }
+}
 
     function curve_circle_length() = (overall_length - (stud_spacing * min(real_length - 1, real_curve_stud_rows)) + (wall_play/2)) * 2;
     function curve_circle_height() = (
