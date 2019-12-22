@@ -61,7 +61,8 @@ wing_stud_notches = "yes"; // [yes:Yes, no:No]
 // How many rows of studs should be left before the slope?
 slope_stud_rows = 1;
 
-// How much vertical height should be left at the end of the slope? e.g, a value of zero means the slope reaches the bottom of the block. A value of 1 means that for a block with height 2, the slope reaches halfway down the block.
+// How much vertical height should be left at the end of the slope? e.g, a value of zero means the slope reaches the bottom of the block.
+// A value of 1 means that for a block with height 2, the slope reaches halfway down the block.
 slope_end_height = 0;
 
 /* [Curves] */
@@ -72,7 +73,9 @@ curve_stud_rows = 5;
 // Should the curve be convex or concave?
 curve_type = "concave"; // [concave:Concave, convex:Convex]
 
-// How much vertical height should be left at the end of the curve? e.g, a value of zero means the curve reaches the bottom of the block. A value of 1 means that for a block with height 2, the curve reaches halfway down the block.
+// How much vertical height should be left at the end of the curve?
+// e.g, a value of zero means the curve reaches the bottom of the block.
+// A value of 1 means that for a block with height 2, the curve reaches halfway down the block.
 curve_end_height = 0;
 
 /* [Baseplates] */
@@ -100,10 +103,12 @@ dual_bottom = "no"; // [no:No, yes:Yes]
 
 /* [Printer-Specific] */
 
-// Should extra reinforcement be included to make printing on an FDM printer easier? Ignored for tiles, since they're printed upside-down and don't need the reinforcement. Recommended for block heights less than 1 or for Duplo bricks. 
+// Should extra reinforcement be included to make printing on an FDM printer easier? Ignored for tiles, since they're printed 
+//  upside-down and don't need the reinforcement. Recommended for block heights less than 1 or for Duplo bricks. 
 use_reinforcement = "no"; // [no:No, yes:Yes]
 
-// If your printer prints the blocks correctly except for the stud diameter, use this variable to resize just the studs for your printer. A value of 1.05 will print the studs 105% wider than standard.
+// If your printer prints the blocks correctly except for the stud diameter, use this variable to resize just the studs for your printer.
+//  A value of 1.05 will print the studs 105% wider than standard.
 stud_rescale = 1;
 //stud_rescale = 1.0475 * 1; // Orion Delta, T-Glase
 //stud_rescale = 1.022 * 1; // Orion Delta, ABS
@@ -273,7 +278,7 @@ module block(
                      * Include any union()s that should come before the final difference()s.
                      */
                     
-                    // The mass of the block.
+                    // The outer boundary of the block, with interior drilled out
                     difference() {
                         cube([overall_length, overall_width, real_height * block_height]);
                         translate([wall_thickness,wall_thickness,-roof_thickness]) cube([overall_length-wall_thickness*2,overall_width-wall_thickness*2,block_height*real_height]);
@@ -293,29 +298,34 @@ module block(
                        }
                     }
 
-                    // Interior splines to catch the studs.
+                    // Interior splines to catch the studs. Along length
                     translate([stud_spacing / 2 - wall_play - (spline_thickness/2), 0, 0]) for (xcount = [0:real_length-1]) {
                         translate([0,wall_thickness,0]) translate([xcount * stud_spacing, 0, 0]) cube([spline_thickness, spline_length, real_height * block_height]);
                         translate([xcount * stud_spacing, overall_width - wall_thickness -  spline_length, 0]) cube([spline_thickness, spline_length, real_height * block_height]);
                     }
 
+                    // Interior splines along width
                     translate([0, stud_spacing / 2 - wall_play - (spline_thickness/2), 0]) for (ycount = [0:real_width-1]) {
                         translate([wall_thickness,0,0]) translate([0, ycount * stud_spacing, 0]) cube([spline_length, spline_thickness, real_height * block_height]);
                         translate([overall_length - wall_thickness -  spline_length, ycount * stud_spacing, 0]) cube([spline_length, spline_thickness, real_height * block_height]);
                     }
+                    
 
+                    // Reinforcements and posts
                     if (type != "baseplate" && real_width > 1 && real_length > 1 && !real_dual_sided && roof_thickness < block_height * height) {
-                        // Reinforcements and posts
+                        // Posts
                         translate([post_diameter / 2, post_diameter / 2, 0]) {
                             translate([(overall_length - total_posts_length)/2, (overall_width - total_posts_width)/2, 0]) {
                                 union() {
                                     // Posts
                                     for (ycount=[1:real_width-1]) {
                                         for (xcount=[1:real_length-1]) {
-                                            translate([(xcount-1)*stud_spacing,(ycount-1)*stud_spacing,0]) post(real_vertical_axle_holes && !skip_this_vertical_axle_hole(xcount, ycount));
+                                            translate([(xcount-1)*stud_spacing,(ycount-1)*stud_spacing,0]) post(real_vertical_axle_holes && 
+                                             !skip_this_vertical_axle_hole(xcount, ycount));
                                         }
                                     }
-
+                                    
+                                    
                                     // Reinforcements
                                     if (real_reinforcement) {
                                         difference() {
@@ -327,12 +337,14 @@ module block(
 
                                             for (ycount=[1:real_width-1]) {
                                                 for (xcount=[1:real_length-1]) {
-                                                    translate([(xcount-1)*stud_spacing,(ycount-1)*stud_spacing,-0.5]) cylinder(r=post_diameter/2-0.1, h=real_height*block_height+0.5, $fs=cylinder_precision);
+                                                    translate([(xcount-1)*stud_spacing,(ycount-1)*stud_spacing,-0.5]) 
+                                                      cylinder(r=post_diameter/2-0.1, h=real_height*block_height+0.5, $fs=cylinder_precision);
                                                 }
                                             }
                                         }
                                     }
                                 }
+                                // end union
                             }
                         }
                     }
