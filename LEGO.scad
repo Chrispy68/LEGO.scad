@@ -187,6 +187,9 @@ module block(
     //  on both sides
     brace_height = 6.3; // not certain what if anything is needed for non-LEGO
     brace_thickness = 0.8;
+    // we also need to keep track of the recesses opposite studs
+    recess_height = 1.7;
+    recess_diameter = 2.6;
         
     spline_length = (brand == "lego" ? 0.25 : 1.7);
     spline_thickness = (brand == "lego" ? 0.7 : 1.3);
@@ -286,6 +289,21 @@ module block(
                     difference() {
                         cube([overall_length, overall_width, real_height * block_height]);
                         translate([wall_thickness,wall_thickness,-roof_thickness]) cube([overall_length-wall_thickness*2,overall_width-wall_thickness*2,block_height*real_height]);
+                        
+                        // drill out the complimentary recesses due to studs.
+                        if ( type != "tile" && !real_dual_bottom ) {
+                            translate([stud_diameter * stud_rescale / 2, stud_diameter * stud_rescale / 2, 0]) 
+                            translate([(overall_length - total_studs_length)/2, (overall_width - total_studs_width)/2, 0]) {
+                                for (ycount=[0:real_width-1]) {
+                                    for (xcount=[0:real_length-1]) {
+                                        if (!skip_this_stud(xcount, ycount)) {
+                                            translate([xcount*stud_spacing,ycount*stud_spacing,block_height*real_height-roof_thickness-0.05]) 
+                                             cylinder(h=recess_height+0.01, r1=recess_diameter/2, $fs=cylinder_precision);
+                                        }
+                                    }
+                                }
+                           }
+                        } // end recess drilling
                     }
 
                     // The studs on top of the block (if it's not a tile).
@@ -314,7 +332,6 @@ module block(
                         translate([overall_length - wall_thickness -  spline_length, ycount * stud_spacing, 0]) cube([spline_length, spline_thickness, real_height * block_height]);
                     }
                     
-
                     // Reinforcements and posts
                     if (type != "baseplate" && real_width > 1 && real_length > 1 && !real_dual_sided && roof_thickness < block_height * height) {
                         // Posts

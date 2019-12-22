@@ -13,12 +13,14 @@ Changes compared with the cfinke version:
  (2) Slightly changed the dimensions so they are a match for LEGO brick dimensions.  The cfinke version has some measurements that are off by roughly 0.1mm--0.2mm.  
 
  (3) Began adding the trusses / supportive bracing between the brick walls and
-   the posts. 
+   the posts. Presumably this is not complete yet -- will compare with some of 
+   my son's larger bricks.
+
+ (4) Added the recesses opposite studs. 
  
 Anticipated changes in the near future:
 
  (1) Add the supporting trusses that appear on the underside of LEGO bricks. This
   is partially implemented at present. 
  
- (2) Hollow-out the underside of studs, as one sees in actual LEGO bricks.
  
