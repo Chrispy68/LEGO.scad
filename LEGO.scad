@@ -175,15 +175,19 @@ module block(
     post_wall_thickness = (brand == "lego" ? 0.85 : 1); // LP
     wall_thickness=(brand == "lego" ? 1.2 : 1.5); //LP
     stud_diameter=(brand == "lego" ? 4.8 : 9.35);  //LP
-    hollow_stud_inner_diameter = (brand == "lego" ? 2.6 : 6.7); // LP not used?
+    hollow_stud_inner_diameter = (brand == "lego" ? 3.2 : 6.7); // LP hollow studs are 0.8mm thick 
     stud_height=(brand == "lego" ? 1.8 : 4.4); //LP
     stud_spacing=(brand == "lego" ? 8 : 8 * 2); //LP
-    block_height=(brand == "lego" ? (type == "baseplate" ? 1.3 : 9.6) : 9.6 * 2);
+    block_height=(brand == "lego" ? (type == "baseplate" ? 1.3 : 9.6) : 9.6 * 2); //LP
     pin_diameter=(brand == "lego" ? 3 : 3 * 2);
-    post_diameter=(brand == "lego" ? 6.5 : 13.2);
+    post_diameter=(brand == "lego" ? 6.51 : 13.2); // LP
     cylinder_precision=(brand == "lego" ? 0.1 : 0.05);
     reinforcing_width = (brand == "lego" ? 0.7 : 1);
-
+    // in a regular brick the brace is the material that goes between every 2nd post and the outer block wall,
+    //  on both sides
+    brace_height = 6.3; // not certain what if anything is needed for non-LEGO
+    brace_thickness = 0.8;
+        
     spline_length = (brand == "lego" ? 0.25 : 1.7);
     spline_thickness = (brand == "lego" ? 0.7 : 1.3);
 
@@ -325,8 +329,28 @@ module block(
                                         }
                                     }
                                     
-                                    
-                                    // Reinforcements
+                                    // only have bracing if real_length and real_width >= 2. 
+                                    if (real_length>=3 && real_width>=2) {
+                                        // bracing facet / trusses in y-direction
+                                        for (ct=[0:floor((real_length-4)/2)]) {
+                                            translate([-brace_thickness/2 + (1+2*ct)*stud_spacing,post_diameter/2+stud_spacing*(real_width-2),block_height-brace_height-wall_thickness]) 
+                                              cube(size=[brace_thickness,stud_spacing/2,brace_height], center=false);
+                                            translate([-brace_thickness/2 + (1+2*ct)*stud_spacing, -post_diameter/2-stud_spacing/2, block_height-brace_height-wall_thickness])
+                                              cube(size=[brace_thickness, stud_spacing/2, brace_height], center=false);
+                                        } // end length bracing loop
+                                        // bracing facet / trusses in x-direction
+                                        if (real_width>2) {
+                                        for (ct=[0:floor((real_width-4)/2)]) {
+                                            translate([post_diameter/2+stud_spacing*(real_length-2),-brace_thickness/2 + (1+2*ct)*stud_spacing,
+                                                           block_height-brace_height-wall_thickness]) 
+                                              cube(size=[stud_spacing/2, brace_thickness, brace_height], center=false);
+                                            translate([-post_diameter/2-stud_spacing/2,-brace_thickness/2 + (1+2*ct)*stud_spacing, 
+                                                            block_height-brace_height-wall_thickness])
+                                              cube(size=[stud_spacing/2, brace_thickness, brace_height], center=false);
+                                        } } // end width bracing loop
+                                        // TODO: inspect bigger LEGO bricks to see if they use more trusses. Vaguely remember that they do.
+                                   }
+                                
                                     if (real_reinforcement) {
                                         difference() {
                                             for (ycount=[1:real_width-1]) {
