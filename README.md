@@ -4,7 +4,7 @@ An OpenSCAD LEGO-compatible brick generator.
 
 This parametric brick takes the work of https://github.com/cfinke/LEGO.scad a few steps further, taking the schema closer to being fully-compatible with LEGO bricks. My personal motivation is to make this library suitable for building custom bricks on an SLA printer, to the accuracy of the printing device.
 
-Likely you will need a print at a resolution of 100-microns or finer for the prints to turn out well. 
+Likely you will need to print at a resolution of 100-microns or finer for the prints to turn out well. 
 
 Changes compared with the cfinke version:
 
