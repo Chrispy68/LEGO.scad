@@ -9,10 +9,11 @@
 /** TODO: 
  *   There are some features missing in these bricks that do not occur in the original LEGO
  *     bricks.  
- *   (1) The technical drawing of the 2x4 brick includes supporting trusses  between the side walls and the 
- *   (2) The studs are not hollowed-out on the underside, as they are in the original LEGO bricks.
- *   (3) Some of the dimensions in the cfinke library this was derived from were wrong.  And the 
- *    studs were not rounded.  Ongoing attempt to find appropriate amount of rounding.
+ *   (1) The technical drawing of the 2x4 brick includes supporting trusses  between the side walls and the posts.  
+ *          Some, but perhaps not all have been added.
+ *   (2) Some of the dimensions in the cfinke library this was derived from were wrong.  And the 
+ *    studs were not rounded.  Ongoing attempt to find appropriate amount of rounding. Have made a few corrections.
+ *   will compare with prints and adapt.
  */
 
 // NOTE: $fs does not seem to work if $fa is set too big. 
@@ -113,35 +114,39 @@ stud_rescale = 1;
 //stud_rescale = 1.0475 * 1; // Orion Delta, T-Glase
 //stud_rescale = 1.022 * 1; // Orion Delta, ABS
 
-// Print tiles upside down.
-translate([0, 0, (block_type == "tile" ? block_height_ratio * block_height : 0)]) rotate([0, (block_type == "tile" ? 180 : 0), 0]) {
-    block(
-        width=block_width,
-        length=block_length,
-        height=block_height_ratio,
-        type=block_type,
-        brand=block_brand,
-        stud_type=stud_type,
-        horizontal_holes=(technic_holes=="yes"),
-        vertical_axle_holes=(vertical_axle_holes=="yes"),
-        reinforcement=(use_reinforcement=="yes"),
-        wing_type=wing_type,
-        wing_end_width=wing_end_width,
-        wing_base_length=wing_base_length,
-        stud_notches=(wing_stud_notches=="yes"),
-        slope_stud_rows=slope_stud_rows,
-        slope_end_height=slope_end_height,
-        curve_stud_rows=curve_stud_rows,
-        curve_type=curve_type,
-        curve_end_height=curve_end_height,
-        roadway_width=roadway_width,
-        roadway_length=roadway_length,
-        roadway_x=roadway_x,
-        roadway_y=roadway_y,
-        stud_rescale=stud_rescale,
-        dual_sided=(dual_sided=="yes"),
-        dual_bottom=(dual_bottom=="yes")
-    );
+difference() {
+    // Print tiles upside down.
+    translate([0, 0, (block_type == "tile" ? block_height_ratio * block_height : 0)]) rotate([0, (block_type == "tile" ? 180 : 0), 0]) {
+        block(
+            width=block_width,
+            length=block_length,
+            height=block_height_ratio,
+            type=block_type,
+            brand=block_brand,
+            stud_type=stud_type,
+            horizontal_holes=(technic_holes=="yes"),
+            vertical_axle_holes=(vertical_axle_holes=="yes"),
+            reinforcement=(use_reinforcement=="yes"),
+            wing_type=wing_type,
+            wing_end_width=wing_end_width,
+            wing_base_length=wing_base_length,
+            stud_notches=(wing_stud_notches=="yes"),
+            slope_stud_rows=slope_stud_rows,
+            slope_end_height=slope_end_height,
+            curve_stud_rows=curve_stud_rows,
+            curve_type=curve_type,
+            curve_end_height=curve_end_height,
+            roadway_width=roadway_width,
+            roadway_length=roadway_length,
+            roadway_x=roadway_x,
+            roadway_y=roadway_y,
+            stud_rescale=stud_rescale,
+            dual_sided=(dual_sided=="yes"),
+            dual_bottom=(dual_bottom=="yes")
+        );
+    }
+    /* Let's monogram the block */
+    translate([-19,-7.4,1]) scale([0.8,0.35,0.8]) rotate(90, [1,0,0] ) color("SteelBlue", 1.0) linear_extrude(height=1.5) text("Hamster", font="Open Sans Condensed");
 }
 
 module block(

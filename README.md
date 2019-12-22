@@ -23,4 +23,13 @@ Anticipated changes in the near future:
  (1) Add the supporting trusses that appear on the underside of LEGO bricks. This
   is partially implemented at present. 
  
- 
+Printing advice: 
+
+I have been printing on a Formlabs Form 3 this is a resin SLA printer.  
+After washing and curing the parts I notice a shrinkage of:
+
+Grey resin -- 0.4% to 0.8%
+Clear resin -- 0.9% to 1.5%
+
+So I would advise scaling by a factor of 1.004 in grey, and 1.009 in clear. 
+I will update the scaling advice as I gain experience with the process.
