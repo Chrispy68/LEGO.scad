@@ -2,10 +2,19 @@
 
 An OpenSCAD LEGO-compatible brick generator.
 
-This parametric brick takes the popular work of http://www.thingiverse.com/thing:5699 a couple steps further, adding easy Customizer support and support for generating wings, smooth-topped tiles, DUPLO-style bricks, sloped bricks, Technic-style holes, and more.
+This parametric brick takes the work of https://github.com/cfinke/LEGO.scad a few steps further, taking the schema closer to being fully-compatible with LEGO bricks. My personal motivation is to make this library suitable for building custom bricks on an SLA printer, to the accuracy of the printing device.
 
-Depending on the resolution of your printer, you may not be able to print pieces that fit exactly with standard LEGO blocks. If you do print any of these bricks, I'd be interested to know whether they fits together with other bricks, especially if you have an SLS or SLA printer.
+Likely you will need to print at a resolution of 100-microns or finer for the prints to turn out well. 
 
-These blocks are not strictly identical to LEGO bricks, but they should be compatible in most every way.
+Changes compared with the cfinke version:
 
-See http://www.chrisfinke.com/2015/01/27/3d-printed-lego-compatible-bricks/ for more details.
+ (1) Added a slight rounding to the studs. This uses a modified version of the code presented by EduardoFoltran in the cfinke comments. 
+ 
+ (2) Slightly changed the dimensions so they are a match for LEGO brick dimensions.  The cfinke version has some measurements that are off by roughly 0.1mm--0.2mm.  
+ 
+Anticipated changes in the near future:
+
+ (1) Add the supporting trusses that appear on the underside of LEGO bricks. 
+ 
+ (2) Hollow-out the underside of studs, as one sees in actual LEGO bricks.
+ 
