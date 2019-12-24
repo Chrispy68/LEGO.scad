@@ -33,3 +33,12 @@ Clear resin -- 0.9% to 1.5%
 
 So I would advise scaling by a factor of 1.004 in grey, and 1.009 in clear. 
 I will update the scaling advice as I gain experience with the process.
+
+![](http://rybu.org/sites/default/files/photo/FL/PC030016.JPG)
+
+Picture of a printed 2x6 brick, in clear resin at 0.05mm resolution.  The print is sitting together with a real LEGO 2x6 brick. 
+
+![](http://rybu.org/sites/default/files/photo/FL/PC030015.JPG)
+
+Underside showing the struts between the cylinders and the walls.  Also the recesses under the studs. 
+
